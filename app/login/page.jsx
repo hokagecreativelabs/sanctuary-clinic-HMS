@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ Next.js 13+ uses `next/navigation`
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 export default function Login() {
@@ -15,7 +15,7 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     try {
       const res = await fetch(
         "https://sanctuary-clinic-hms-production.up.railway.app/api/auth/login",
@@ -25,13 +25,13 @@ export default function Login() {
           body: JSON.stringify({ email, password }),
         }
       );
-  
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
-  
+
       // **Save token in localStorage**
       localStorage.setItem("token", data.token);
-  
+
       // Redirect to dashboard
       router.push("/dashboard");
     } catch (err) {
@@ -40,7 +40,6 @@ export default function Login() {
       setLoading(false);
     }
   };
-  
 
   return (
     <motion.div
