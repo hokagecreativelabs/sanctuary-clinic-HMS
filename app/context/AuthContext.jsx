@@ -1,56 +1,40 @@
-"use client";
-
+"use client"
 import { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
+// Create Context
 const AuthContext = createContext();
 
+// Create Provider
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const router = useRouter();
+  const [token, setToken] = useState(null);
 
+  // Check token on mount
   useEffect(() => {
-    const token = Cookies.get("token");
-
-    if (token) {
-      setUser({ token });
+    const storedToken = Cookies.get("token");
+    if (storedToken) {
+      setToken(storedToken);
     }
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const res = await fetch(
-        "https://sanctuary-clinic-hms-production.up.railway.app/api/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
-
-      Cookies.set("token", data.token, { expires: 1 }); // Store token in cookies
-      setUser({ token: data.token });
-      router.push("/dashboard");
-    } catch (err) {
-      throw err;
-    }
+  // Login function
+  const login = (token) => {
+    Cookies.set("token", token, { expires: 1 }); // Save token in cookies for 1 day
+    setToken(token);
   };
 
+  // Logout function
   const logout = () => {
     Cookies.remove("token");
-    setUser(null);
-    router.push("/login");
+    setToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// Custom hook to use the Auth context
 export const useAuth = () => useContext(AuthContext);

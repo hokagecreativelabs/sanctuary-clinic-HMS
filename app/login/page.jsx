@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth(); // Get login function from context
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,10 +31,12 @@ export default function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // **Save token in localStorage**
-      localStorage.setItem("token", data.token);
+      console.log("Login successful. Token:", data.token);
 
-      // Redirect to dashboard
+      // Use the login function from context to store the token
+      login(data.token);
+
+      // Redirect to the dashboard after login
       router.push("/dashboard");
     } catch (err) {
       setError(err.message);
@@ -59,6 +63,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border rounded mt-1"
               required
+              autoComplete="email"
             />
           </div>
           <div>
@@ -69,6 +74,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border rounded mt-1"
               required
+              autoComplete="current-password"
             />
           </div>
           <button
