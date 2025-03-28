@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/auth", authRoutes);
-app.use("/api/patients", authMiddleware, patientRoutes); // 🔐 Protected
+app.use("/api/patients", patientRoutes); // 🔐 Protected
 app.use("/api/inventory", authMiddleware, inventoryRoutes); // 🔐 Protected
 app.use("/api/billing", authMiddleware, billingRoutes); // 🔐 Protected
 app.use("/api/reports", authMiddleware, reportRoutes);
